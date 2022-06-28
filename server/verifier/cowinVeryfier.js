@@ -5,15 +5,16 @@ import {
     CERTIFICATE_PUBKEY_ID, CERTIFICATE_SIGNED_KEY_TYPE, 
     certificatePublicKeyBase58,
     certificatePublicKey
-} from "./config.mjs";
+} from "../utils/config";
 import {vaccinationContext, vaccinationContextV2} from 'vaccination-context';
-import * as credentialsv1  from'./utils/credentials.js';
-import { axiosInstance } from "./service/index.js";
-import * as jsigs  from 'jsonld-signatures';
-import {contexts}  from 'security-context';
-import * as crypto  from 'crypto-ld';
+import credentialsv1 from '../utils/credentials';
+import { axiosInstance } from "../service";
+// @ts-ignore
+import jsigs from 'jsonld-signatures';
+import {contexts} from 'security-context';
+import RSAKeyPair from 'crypto-ld';
 import pkg from 'jsonld';
-import * as vc from "vc-js";
+import vc from "vc-js";
 
 
 const {documentLoader} = pkg;
@@ -46,8 +47,7 @@ const certificateStatus = async (certificateData) =>{
 
     setTimeout(()=>{
         try {
-            axiosInstance()
-              .post("/divoc/api/v1/events/", [{"date":new Date().toISOString(), "type":"verify"}])
+            axiosInstance().get("/divoc/api/v1/events/", [{"date":new Date().toISOString(), "type":"verify"}])
               .catch((e) => {
                 console.log(e);
             });
@@ -82,7 +82,7 @@ const verifyData = async (certificateData) =>{
                 assertionMethod: [publicKey.id]
             };
 
-            const key = new crypto.RSAKeyPair({...publicKey});
+            const key = RSAKeyPair({...publicKey});
             const {RsaSignature2018} = jsigs.suites;
             result = await jsigs.verify(signedJSON, {
                 suite: new RsaSignature2018({key}),

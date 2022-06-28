@@ -1,4 +1,4 @@
-import envConfigs from "../utils/env.config.js";
+import envConfigs from "../utils/env.config";
 import axios from "axios";
 
 export const axiosInstance = () => {  
